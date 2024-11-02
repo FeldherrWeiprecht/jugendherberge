@@ -21,13 +21,31 @@ import anvil.server
 import sqlite3
 
 @anvil.server.callable
-def get_zimmer():
-    connection = sqlite3.connect('jugendherberge.db')
-    cursor = connection.cursor()
+def get_guests():
+    print("Connecting to database...")
+    try:
+        connection = sqlite3.connect('jugendherberge.db')
+        print("Database connected.")
+        cursor = connection.cursor()
+        cursor.execute("SELECT Vorname, Nachname FROM Gast")
+        guests = cursor.fetchall()
+        connection.close()
+        
+        print(f"Guests fetched: {guests}")
+        return [f"{vorname} {nachname}" for vorname, nachname in guests]
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
 
-    cursor.execute('SELECT ZimmerID, Zimmernummer FROM Zimmer')
-    zimmer_liste = cursor.fetchall()
-
-    connection.close()
-
-    return zimmer_liste
+def test_db_connection():
+    try:
+        connection = sqlite3.connect('jugendherberge.db')
+        cursor = connection.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        tables = cursor.fetchall()
+        connection.close()
+        
+        return tables  # Gibt die Tabellen in der Datenbank zurück
+    except Exception as e:
+        print(f"Error: {e}")
+        return []
