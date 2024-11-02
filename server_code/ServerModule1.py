@@ -37,6 +37,7 @@ def get_guests():
         print(f"Error: {e}")
         return []
 
+@anvil.server.callable
 def test_db_connection():
     try:
         connection = sqlite3.connect('jugendherberge.db')
@@ -45,7 +46,8 @@ def test_db_connection():
         tables = cursor.fetchall()
         connection.close()
         
-        return tables  # Gibt die Tabellen in der Datenbank zurück
+        print(f"Tables in database: {tables}")  # Debug-Ausgabe
+        return tables
     except Exception as e:
         print(f"Error: {e}")
         return []
