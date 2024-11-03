@@ -14,7 +14,8 @@ class Form1(Form1Template):
         self.populate_jugendherbergen_dropdown()
         self.populate_preiskategorien_dropdown()
         self.populate_gaeste_dropdown()
-        self.repeating_panel_gaeste.items = [{'name': 'Test Gast'}]  # Testeintrag
+        self.repeating_panel_gaeste.items = []  # Setze anfangs eine leere Liste
+
 
         # Event-Handler für Dropdown-Auswahl
         self.drop_down_jugendherbergen.set_event_handler('change', self.on_jugendherberge_change)
@@ -52,16 +53,12 @@ class Form1(Form1Template):
             self.drop_down_gaeste.selected_value = self.drop_down_gaeste.items[0]  # Setze den Standardwert
 
     def button_add_click(self, **event_args):
-        selected_guest = self.drop_down_gaeste.selected_value
-        print(f"Selected guest: {selected_guest}")  # Debugging-Ausgabe
-        if selected_guest:
-            new_entry = {'name': selected_guest}  # Verwende 'name' als Schlüssel
-            current_items = self.repeating_panel_gaeste.items
-            current_items.append(new_entry)  # Füge den neuen Gast hinzu
-            self.repeating_panel_gaeste.items = current_items  # Aktualisiere die Items
-            alert(f"Gast '{selected_guest}' hinzugefügt!")
-        else:
-            alert("Bitte wählen Sie einen Gast aus der Liste.")
+      selected_guest = self.drop_down_gaeste.selected_value
+      if selected_guest:
+          new_entry = {'name': selected_guest}
+          if self.repeating_panel_gaeste.items is None:
+              self.repeating_panel_gaeste.items = []
+          self.repeating_panel_gaeste.items.append(new_entry)
 
 
           
