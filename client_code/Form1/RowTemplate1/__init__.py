@@ -10,4 +10,7 @@ class RowTemplate1(RowTemplate1Template):
   def __init__(self, **properties):
     # Set Form properties and Data Bindings.
     self.init_components(**properties)
+
+    self.Name.text = self.item['Name']
+
   
