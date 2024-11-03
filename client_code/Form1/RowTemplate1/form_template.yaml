@@ -5,7 +5,7 @@ components:
   type: Label
 - layout_properties: {column: VJQQOR}
   name: label_2
-  properties: {}
+  properties: {text: asdfadfa}
   type: Label
 - layout_properties: {column: OJLQEN}
   name: label_3

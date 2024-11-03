@@ -14,7 +14,18 @@ class Form1(Form1Template):
         self.populate_jugendherbergen_dropdown()
         self.populate_preiskategorien_dropdown()
         self.populate_gaeste_dropdown()
-        self.repeating_panel_gaeste.items = []  # Setze anfangs eine leere Liste
+    
+
+        self.repeating_panel_gaeste.items = [
+              {"text": "Label 1"},
+              {"text": "Label 2"},
+              {"text": "Label 3"},
+          ]
+
+    
+        for i in range(0,30):
+            label = Label(text="hallo")
+            self.repeating_panel_gaeste.add_component(label)
 
 
         # Event-Handler für Dropdown-Auswahl
