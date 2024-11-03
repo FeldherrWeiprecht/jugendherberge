@@ -5,6 +5,8 @@ unique_ids:
     theme.css: RC2W5AGGZYGAUI7AV544SLZGVGMMEOID
   forms:
     Form1: '1730451672337914967476906.1256'
+    Form1.RowTemplate1: '1730635834957804557422549.107'
+    Form1.RowTemplate2: '1730636432462169521901555.75296'
   modules: {}
   scripts: {}
   server_modules:

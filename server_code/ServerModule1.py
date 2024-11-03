@@ -5,18 +5,6 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import sqlite3
-# This is a server module. It runs on the Anvil server,
-# rather than in the user's browser.
-#
-# To allow anvil.server.call() to call functions here, we mark
-# them with @anvil.server.callable.
-# Here is an example - you can replace it with your own:
-#
-# @anvil.server.callable
-# def say_hello(name):
-#   print("Hello, " + name + "!")
-#   return 42
-#
 
 @anvil.server.callable
 def create_database():
@@ -86,7 +74,6 @@ def fill_database():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
 
-    # Vorhandene Daten löschen
     cursor.execute('DELETE FROM MitBuchung')
     cursor.execute('DELETE FROM Buchung')
     cursor.execute('DELETE FROM Gast')
@@ -94,7 +81,6 @@ def fill_database():
     cursor.execute('DELETE FROM Jugendherberge')
     cursor.execute('DELETE FROM Preiskategorie')
 
-    # Preiskategorien befüllen
     preiskategorien = [
         (1, 30.0, 'Einzelzimmer'),
         (2, 50.0, 'Doppelzimmer'),
@@ -104,7 +90,6 @@ def fill_database():
     ]
     cursor.executemany('INSERT INTO Preiskategorie (PreiskategorieID, Preis, Beschreibung) VALUES (?, ?, ?)', preiskategorien)
 
-    # Jugendherbergen befüllen
     jugendherbergen = [
         (1, 'Jugendherberge A', 'Musterstraße 1, 12345 Musterstadt'),
         (2, 'Jugendherberge B', 'Beispielweg 2, 54321 Beispielstadt'),
@@ -114,7 +99,6 @@ def fill_database():
     ]
     cursor.executemany('INSERT INTO Jugendherberge (JugendherbergeID, Name, Adresse) VALUES (?, ?, ?)', jugendherbergen)
 
-    # Zimmer befüllen
     zimmer = [
         (1, 101, 1, 1, 1),
         (2, 102, 2, 2, 1),
@@ -124,7 +108,6 @@ def fill_database():
     ]
     cursor.executemany('INSERT INTO Zimmer (ZimmerID, Zimmernummer, Schlafplaetze, PreiskategorieID, JugendherbergeID) VALUES (?, ?, ?, ?, ?)', zimmer)
 
-    # Gäste befüllen
     gaeste = [
         (1, 'Max', 'Mustermann', 'max@mustermann.de', 1),
         (2, 'Erika', 'Musterfrau', 'erika@musterfrau.de', 2),
@@ -134,7 +117,6 @@ def fill_database():
     ]
     cursor.executemany('INSERT INTO Gast (GastID, Vorname, Nachname, Email, PreiskategorieID) VALUES (?, ?, ?, ?, ?)', gaeste)
 
-    # Buchungen befüllen
     buchungen = [
         (1, '2024-01-01', 1, 1),
         (2, '2024-01-02', 2, 2),
@@ -144,7 +126,6 @@ def fill_database():
     ]
     cursor.executemany('INSERT INTO Buchung (BuchungID, Buchungsdatum, GastID, ZimmerID) VALUES (?, ?, ?, ?)', buchungen)
 
-    # Mitbuchungen befüllen
     mitbuchungen = [
         (1, 1, 2),
         (2, 1, 3),
@@ -159,13 +140,63 @@ def fill_database():
 
 
 @anvil.server.callable
-def get_zimmer_numbers():
+def get_jugendherbergen():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
-    
-    cursor.execute('SELECT ZimmerID, Zimmernummer FROM Zimmer')
-    zimmer = cursor.fetchall()  # List of tuples (ZimmerID, Zimmernummer)
-    
+    cursor.execute('SELECT Name FROM Jugendherberge')
+    jugendherbergen = cursor.fetchall()
     connection.close()
-    
-    return zimmer
+    return [name[0] for name in jugendherbergen]
+
+@anvil.server.callable
+def get_zimmer_by_jugendherberge(jugendherberge_id):
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+        SELECT Zimmernummer, Preis FROM Zimmer 
+        JOIN Preiskategorie ON Zimmer.PreiskategorieID = Preiskategorie.PreiskategorieID
+        WHERE JugendherbergeID = ?
+    ''', (jugendherberge_id,))
+    zimmer = cursor.fetchall()
+    connection.close()
+    return [(f'Zimmer {zimmernummer} - {preis} €', zimmernummer) for zimmernummer, preis in zimmer]
+  
+@anvil.server.callable
+def get_jugendherberge_id_by_name(jugendherberge_name):
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT JugendherbergeID FROM Jugendherberge WHERE Name = ?', (jugendherberge_name,))
+    jugendherberge_id = cursor.fetchone()[0]
+    connection.close()
+    return jugendherberge_id
+
+@anvil.server.callable
+def get_preiskategorien():
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT Beschreibung, PreiskategorieID FROM Preiskategorie')
+    preiskategorien = cursor.fetchall()
+    connection.close()
+    return [(beschreibung, preiskategorie_id) for beschreibung, preiskategorie_id in preiskategorien]
+
+@anvil.server.callable
+def get_zimmer_by_jugendherberge_and_preiskategorie(jugendherberge_id, preiskategorie_id):
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+        SELECT Zimmernummer, Preis FROM Zimmer 
+        JOIN Preiskategorie ON Zimmer.PreiskategorieID = Preiskategorie.PreiskategorieID
+        WHERE JugendherbergeID = ? AND Zimmer.PreiskategorieID = ?
+    ''', (jugendherberge_id, preiskategorie_id))
+    zimmer = cursor.fetchall()
+    connection.close()
+    return [(f'Zimmer {zimmernummer} - {preis} €', zimmernummer) for zimmernummer, preis in zimmer]
+
+@anvil.server.callable
+def get_all_guests():
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+    cursor.execute('SELECT Vorname, Nachname FROM Gast')
+    guests = cursor.fetchall()
+    connection.close()
+    return guests
