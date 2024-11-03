@@ -1,14 +1,22 @@
 components:
+- layout_properties: {column: OJLQEN}
+  name: label_3
+  properties: {align: left}
+  type: Label
 - layout_properties: {column: JKSDUP}
   name: label_1
   properties: {}
   type: Label
 - layout_properties: {column: VJQQOR}
   name: label_2
-  properties: {text: asdfadfa}
+  properties: {}
   type: Label
 - layout_properties: {column: OJLQEN}
-  name: label_3
+  name: label_4
+  properties: {}
+  type: Label
+- layout_properties: {column: OJLQEN}
+  name: label_5
   properties: {}
   type: Label
 container: {type: DataRowPanel}

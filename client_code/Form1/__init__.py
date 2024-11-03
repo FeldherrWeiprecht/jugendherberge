@@ -16,16 +16,14 @@ class Form1(Form1Template):
         self.populate_gaeste_dropdown()
     
 
-        self.repeating_panel_gaeste.items = [
-              {"text": "Label 1"},
-              {"text": "Label 2"},
-              {"text": "Label 3"},
-          ]
+        self.data = [
+            {'Name': 'Max', 'Alter': 25},
+            {'Name': 'Anna', 'Alter': 30},
+            {'Name': 'Tom', 'Alter': 22}
+        ]
 
-    
-        for i in range(0,30):
-            label = Label(text="hallo")
-            self.repeating_panel_gaeste.add_component(label)
+        # DataGrid füllen
+        self.data_grid_1.items = self.data
 
 
         # Event-Handler für Dropdown-Auswahl

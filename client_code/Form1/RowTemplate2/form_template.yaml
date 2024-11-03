@@ -1,0 +1,17 @@
+components:
+- data_bindings:
+  - {code: 'self.item[''Name'']', property: text, writeback: false}
+  layout_properties: {column: JKSDUP}
+  name: label_1
+  properties: {}
+  type: Label
+- data_bindings:
+  - {code: 'self.item[''Alter'']', property: text, writeback: false}
+  layout_properties: {column: VJQQOR}
+  name: label_2
+  properties: {}
+  type: Label
+container:
+  data_bindings: []
+  type: DataRowPanel
+is_package: true
