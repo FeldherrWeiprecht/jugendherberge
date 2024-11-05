@@ -11,7 +11,6 @@ def create_database():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
 
-    # Tabellen erstellen
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS Preiskategorie (
             PreiskategorieID INTEGER PRIMARY KEY,
