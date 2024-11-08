@@ -1,22 +1,22 @@
 components:
-- layout_properties: {grid_position: 'YEWNIR,WIUDIX'}
+- layout_properties: {full_width_row: false, grid_position: 'HSAJKZ,TIBODJ'}
   name: drop_down_jugendherbergen
-  properties: {}
+  properties: {align: right}
   type: DropDown
-- layout_properties: {grid_position: 'SBLLWA,QNSAZK'}
+- layout_properties: {grid_position: 'IAWOOU,IUXINB'}
   name: drop_down_zimmer
   properties: {}
   type: DropDown
-- layout_properties: {grid_position: 'CXOYNW,PNNTXI'}
+- layout_properties: {grid_position: 'BIGPEI,SXATCS'}
   name: drop_down_preiskategorie
-  properties: {}
+  properties: {align: full}
   type: DropDown
-- layout_properties: {grid_position: 'KKCXUU,OWXKUC'}
+- layout_properties: {grid_position: 'URVXLV,PKBCVA'}
   name: drop_down_gaeste
-  properties: {}
+  properties: {align: full}
   type: DropDown
 - event_bindings: {click: button_add_click}
-  layout_properties: {grid_position: 'WDXVOB,VHOLGY'}
+  layout_properties: {grid_position: 'BLBQCA,OKMHHS'}
   name: button_add
   properties: {text: add}
   type: Button
