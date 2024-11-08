@@ -199,3 +199,16 @@ def get_all_guests():
     guests = cursor.fetchall()
     connection.close()
     return guests
+
+@anvil.server.callable
+def get_all_guests_with_prices():
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+    cursor.execute('''
+        SELECT Gast.GastID, Gast.Vorname, Gast.Nachname, Preiskategorie.Preis 
+        FROM Gast
+        JOIN Preiskategorie ON Gast.PreiskategorieID = Preiskategorie.PreiskategorieID
+    ''')
+    guests = cursor.fetchall()
+    connection.close()
+    return guests

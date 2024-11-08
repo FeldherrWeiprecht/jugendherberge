@@ -46,30 +46,54 @@ class Form1(Form1Template):
             self.update_zimmer_dropdown(selected_herberge, self.drop_down_preiskategorie.selected_value)
 
     def populate_gaeste_dropdown(self):
-        guests = anvil.server.call('get_all_guests')
-        self.drop_down_gaeste.items = [f"{vorname} {nachname}" for vorname, nachname in guests]
-
-        if guests:
-            self.drop_down_gaeste.selected_value = self.drop_down_gaeste.items[0]  # Setze den Standardwert
+      guests = anvil.server.call('get_all_guests_with_prices')  # Adjusted server call
+      self.drop_down_gaeste.items = [
+          (f"{vorname} {nachname} - {preis} €", gast_id) for gast_id, vorname, nachname, preis in guests
+      ]
+      if guests:
+          self.drop_down_gaeste.selected_value = self.drop_down_gaeste.items[0][1]  # Set default value
 
     def button_add_click(self, **event_args):
-      selected_guest = self.drop_down_gaeste.selected_value
-      
-      new_entry = {'Name': selected_guest}
-      if new_entry not in self.gaeste:
-        self.gaeste.append(new_entry)
-        self.repeating_panel_gaeste.items = self.gaeste
+        selected_guest_id = self.drop_down_gaeste.selected_value
+        selected_guest = next(
+            (item for item in self.drop_down_gaeste.items if item[1] == selected_guest_id), None
+        )
+        
+        if selected_guest:
+            guest_name_with_price = selected_guest[0]  # Contains "Vorname Nachname - Preis €"
+            
+            # Extracting the name and price
+            name_part, price_part = guest_name_with_price.rsplit(" - ", 1)
+            
+            # Creating the new entry with Name and Preis
+            new_entry = {'Name': name_part, 'Preis': price_part}
+            
+            if new_entry not in self.gaeste:
+                self.gaeste.append(new_entry)
+                self.repeating_panel_gaeste.items = self.gaeste
 
     def button_remove_click(self, **event_args):
-      selected_guest = self.drop_down_gaeste.selected_value
-
-      # Entferne den Gast, wenn er in der Liste ist
-      self.gaeste = [guest for guest in self.gaeste if guest['Name'] != selected_guest]
-
-      # Aktualisiere das Repeating Panel
-      self.repeating_panel_gaeste.items = self.gaeste
-      
-          
+        selected_guest_id = self.drop_down_gaeste.selected_value
+        selected_guest = next(
+            (item for item in self.drop_down_gaeste.items if item[1] == selected_guest_id), None
+        )
+    
+        if selected_guest:
+            guest_name_with_price = selected_guest[0]  # Format: "Vorname Nachname - Preis €"
+            
+            # Split the name and price parts
+            name_part, price_part = guest_name_with_price.rsplit(" - ", 1)
+    
+            # Remove the guest from self.gaeste by matching both name and price
+            self.gaeste = [
+                guest for guest in self.gaeste
+                if not (guest['Name'] == name_part and guest['Preis'] == price_part)
+            ]
+    
+            # Update the Repeating Panel
+            self.repeating_panel_gaeste.items = self.gaeste
+    
+              
     def on_preiskategorie_change(self, **event_args):
         selected_preiskategorie = self.drop_down_preiskategorie.selected_value
         selected_herberge = self.drop_down_jugendherbergen.selected_value
