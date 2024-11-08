@@ -12,5 +12,6 @@ class RowTemplate1(RowTemplate1Template):
     self.init_components(**properties)
 
     self.Name.text = self.item['Name']
+    self.Preis.text = self.item['Preis']
 
   

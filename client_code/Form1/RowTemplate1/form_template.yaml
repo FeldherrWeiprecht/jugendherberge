@@ -5,5 +5,9 @@ components:
   name: Name
   properties: {}
   type: Label
+- layout_properties: {column: CVZJPC}
+  name: Preis
+  properties: {text: Preis}
+  type: Label
 container: {type: DataRowPanel}
 is_package: true

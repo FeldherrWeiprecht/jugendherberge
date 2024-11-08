@@ -21,7 +21,7 @@ components:
   properties: {text: add}
   type: Button
 - event_bindings: {click: button_remove_click}
-  layout_properties: {grid_position: 'GJHVVA,JJDBWS'}
+  layout_properties: {grid_position: 'LGRYXU,HCBVKT'}
   name: button_remove
   properties: {text: remove}
   type: Button
@@ -36,6 +36,7 @@ components:
   properties:
     columns:
     - {data_key: Name, id: JKSDUP, title: Name}
+    - {data_key: Preis, id: CVZJPC, title: Preis}
   type: DataGrid
 container: {type: ColumnPanel}
 is_package: true
