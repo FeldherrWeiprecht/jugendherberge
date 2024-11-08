@@ -116,3 +116,8 @@ class Form1(Form1Template):
         else:
             self.drop_down_zimmer.items = [('Kein Zimmer', None)]  # Setze auf 'Kein Zimmer', wenn keine Zimmer verfügbar sind
             self.drop_down_zimmer.selected_value = None  # Keine Auswahl
+
+    def book_click(self, **event_args):
+      """This method is called when the button is clicked"""
+      pass
+    

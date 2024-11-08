@@ -9,5 +9,7 @@ components:
   name: Preis
   properties: {text: Preis}
   type: Label
-container: {type: DataRowPanel}
+container:
+  properties: {align: left}
+  type: DataRowPanel
 is_package: true
