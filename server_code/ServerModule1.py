@@ -5,6 +5,7 @@ import anvil.tables.query as q
 from anvil.tables import app_tables
 import anvil.server
 import sqlite3
+from datetime import datetime
 
 @anvil.server.callable
 def create_database():
@@ -139,13 +140,29 @@ def fill_database():
 
 
 @anvil.server.callable
-def get_jugendherbergen():
+def get_jugendherbergen_with_addresses():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT Name FROM Jugendherberge')
+    
+    # Abfrage, um die Jugendherbergen und ihre Adressen zu erhalten
+    cursor.execute('''
+        SELECT Name, Adresse, JugendherbergeID
+        FROM Jugendherberge
+    ''')
+    
     jugendherbergen = cursor.fetchall()
     connection.close()
-    return [name[0] for name in jugendherbergen]
+    
+    # Liste von Dictionaries zurückgeben, mit Name, Adresse und ID der Jugendherberge
+    jugendherbergen_list = []
+    for jugendherberge in jugendherbergen:
+        jugendherbergen_list.append({
+            'JugendherbergeID': jugendherberge[2],
+            'DisplayName': f"{jugendherberge[0]} - {jugendherberge[1]}"  # Name und Adresse im Dropdown anzeigen
+        })
+    
+    return jugendherbergen_list
+
 
 @anvil.server.callable
 def get_zimmer_by_jugendherberge(jugendherberge_id):
@@ -212,3 +229,46 @@ def get_all_guests_with_prices():
     guests = cursor.fetchall()
     connection.close()
     return guests
+
+@anvil.server.callable
+def print_database_tables():
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+
+    # Abrufen der Daten aus allen relevanten Tabellen
+    tables = ['Preiskategorie', 'Gast', 'Zimmer', 'Buchung', 'MitBuchung', 'Jugendherberge']
+    table_data = {}
+
+    for table in tables:
+        cursor.execute(f'SELECT * FROM {table}')
+        rows = cursor.fetchall()
+        table_data[table] = rows
+
+    connection.close()
+    return table_data
+
+@anvil.server.callable
+def create_buchung(guest_ids, room_id):
+    connection = sqlite3.connect('jugendherberge.db')
+    cursor = connection.cursor()
+
+    # Aktuellen Zeitpunkt für die Buchung
+    buchungsdatum = "2024-11-09"  # Zum Beispiel das heutige Datum, kann mit datetime modifiziert werden
+
+    # Buchung für den ersten Gast (Max Mustermann, GastID = 1)
+    cursor.execute('''
+        INSERT INTO Buchung (Buchungsdatum, GastID, ZimmerID)
+        VALUES (?, ?, ?)
+    ''', (buchungsdatum, 1, room_id))
+
+    buchung_id = cursor.lastrowid  # Die ID der gerade eingefügten Buchung
+
+    # MitBuchung für alle anderen Gäste
+    for guest_id in guest_ids:
+        cursor.execute('''
+            INSERT INTO MitBuchung (BuchungID, GastID)
+            VALUES (?, ?)
+        ''', (buchung_id, guest_id))
+
+    connection.commit()
+    connection.close()

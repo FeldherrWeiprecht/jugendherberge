@@ -35,7 +35,7 @@ components:
   properties:
     columns:
     - {data_key: Name, id: JKSDUP, title: Name}
-    - {data_key: Preis, id: CVZJPC, title: Preis}
+    - {data_key: Preis, id: CVZJPC, title: Vorzugs Preiskategorie}
   type: DataGrid
 - event_bindings: {click: book_click}
   layout_properties: {grid_position: 'XAJXDO,OVFEVT'}

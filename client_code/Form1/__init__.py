@@ -125,3 +125,31 @@ class Form1(Form1Template):
         else:
             self.drop_down_zimmer.items = [('Kein Zimmer', None)]  # Setze auf 'Kein Zimmer', wenn keine Zimmer verfügbar sind
             self.drop_down_zimmer.selected_value = None  # Keine Auswahl
+    def book_click(self, **event_args):
+      # Holen der ausgewählten Zimmer-ID
+      selected_room = self.drop_down_zimmer.selected_value
+      
+      if selected_room is None:
+          # Wenn "Kein Zimmer" ausgewählt wurde, Fehlermeldung anzeigen
+          alert("Bitte wählen Sie ein Zimmer aus!")
+          return
+      
+      # Holen der IDs der mitgebuchten Gäste (alle außer Max Mustermann)
+      selected_guest_ids = [guest['GastID'] for guest in self.gaeste]
+      
+      if not selected_guest_ids:
+          # Falls keine weiteren Gäste ausgewählt wurden
+          alert("Es müssen mindestens ein Gast ausgewählt werden!")
+          return
+      
+      # Buchung und Mitbuchung erstellen
+      anvil.server.call('create_buchung', selected_guest_ids, selected_room)
+
+      # Gib die Tabelleninhalte in der Konsole aus (wie vorher gewünscht)
+      data = anvil.server.call('print_database_tables')
+      
+      # Ausgabe der Datenbankinhalte in der Konsole
+      for table, rows in data.items():
+          print(f"Table: {table}")
+          for row in rows:
+              print(row)
