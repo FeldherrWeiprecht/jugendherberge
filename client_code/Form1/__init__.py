@@ -63,6 +63,11 @@ class Form1(Form1Template):
 
     def button_add_click(self, **event_args):
       selected_guest_id = self.drop_down_gaeste.selected_value
+      
+      if not selected_guest_id:
+          alert("Bitte wählen Sie einen Gast aus!")
+          return
+      
       selected_guest = next(
           (item for item in self.drop_down_gaeste.items if item[1] == selected_guest_id), None
       )
@@ -139,12 +144,12 @@ class Form1(Form1Template):
       
       if not selected_guest_ids:
           # Falls keine weiteren Gäste ausgewählt wurden
-          alert("Es müssen mindestens ein Gast ausgewählt werden!")
+          alert("Es muss mindestens ein Gast ausgewählt werden!")
           return
       
       # Buchung und Mitbuchung erstellen
       anvil.server.call('create_buchung', selected_guest_ids, selected_room)
-
+  
       # Gib die Tabelleninhalte in der Konsole aus (wie vorher gewünscht)
       data = anvil.server.call('print_database_tables')
       
