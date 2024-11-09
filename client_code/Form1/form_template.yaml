@@ -1,7 +1,7 @@
 components:
 - layout_properties: {full_width_row: false, grid_position: 'HSAJKZ,TIBODJ'}
   name: drop_down_jugendherbergen
-  properties: {align: right}
+  properties: {align: full}
   type: DropDown
 - layout_properties: {grid_position: 'IAWOOU,IUXINB'}
   name: drop_down_zimmer
