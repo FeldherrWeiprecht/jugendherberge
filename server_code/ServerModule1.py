@@ -142,27 +142,38 @@ def fill_database():
 def get_jugendherbergen():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
-
-    cursor.execute('SELECT Name FROM Jugendherberge')
+    
+    # Auswahl von Name und Adresse
+    cursor.execute('SELECT Name, Adresse FROM Jugendherberge')
     result = cursor.fetchall()
-
+    
     connection.close()
-    return [row[0] for row in result]
-
+    # Rückgabe in gewünschtem Format: "Name (Adresse)"
+    return [(f"{name} ({adresse})", name) for name, adresse in result]
 
 @anvil.server.callable
 def get_zimmer_by_jugendherberge(jugendherberge_id):
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
+    
     cursor.execute('''
-        SELECT Zimmernummer, Preis FROM Zimmer 
+        SELECT Zimmernummer, Preis, Schlafplaetze FROM Zimmer 
         JOIN Preiskategorie ON Zimmer.PreiskategorieID = Preiskategorie.PreiskategorieID
         WHERE JugendherbergeID = ?
     ''', (jugendherberge_id,))
+    
     zimmer = cursor.fetchall()
     connection.close()
-    return [(f'Zimmer {zimmernummer} - {preis} €', zimmernummer) for zimmernummer, preis in zimmer]
-  
+    
+    # Rückgabe mit korrekter Pluralform für "Schlafplatz"
+    return [
+        (
+            f"Zimmer {zimmernummer} - {preis} € ({schlafplaetze} Schlafplatz{'e' if schlafplaetze > 1 else ''})",
+            zimmernummer
+        )
+        for zimmernummer, preis, schlafplaetze in zimmer
+    ]
+
 @anvil.server.callable
 def get_jugendherberge_id_by_name(jugendherberge_name):
     connection = sqlite3.connect('jugendherberge.db')
@@ -176,23 +187,36 @@ def get_jugendherberge_id_by_name(jugendherberge_name):
 def get_preiskategorien():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
-    cursor.execute('SELECT Beschreibung, PreiskategorieID FROM Preiskategorie')
+    
+    # Abrufen von Beschreibung, ID und Preis
+    cursor.execute('SELECT Beschreibung, PreiskategorieID, Preis FROM Preiskategorie')
     preiskategorien = cursor.fetchall()
+    
     connection.close()
-    return [(beschreibung, preiskategorie_id) for beschreibung, preiskategorie_id in preiskategorien]
+    return [(beschreibung, preiskategorie_id, preis) for beschreibung, preiskategorie_id, preis in preiskategorien]
 
 @anvil.server.callable
 def get_zimmer_by_jugendherberge_and_preiskategorie(jugendherberge_id, preiskategorie_id):
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
+    
     cursor.execute('''
-        SELECT Zimmernummer, Preis FROM Zimmer 
+        SELECT Zimmernummer, Preis, Schlafplaetze FROM Zimmer 
         JOIN Preiskategorie ON Zimmer.PreiskategorieID = Preiskategorie.PreiskategorieID
         WHERE JugendherbergeID = ? AND Zimmer.PreiskategorieID = ?
     ''', (jugendherberge_id, preiskategorie_id))
+    
     zimmer = cursor.fetchall()
     connection.close()
-    return [(f'Zimmer {zimmernummer} - {preis} €', zimmernummer) for zimmernummer, preis in zimmer]
+    
+    # Rückgabe mit korrekter Pluralform für "Schlafplatz"
+    return [
+        (
+            f"Zimmer {zimmernummer} - {preis} € ({schlafplaetze} Schlafplatz{'e' if schlafplaetze > 1 else ''})",
+            zimmernummer
+        )
+        for zimmernummer, preis, schlafplaetze in zimmer
+    ]
 
 @anvil.server.callable
 def get_all_guests():
