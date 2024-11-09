@@ -138,30 +138,16 @@ def fill_database():
     connection.commit()
     connection.close()
 
-
 @anvil.server.callable
-def get_jugendherbergen_with_addresses():
+def get_jugendherbergen():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
-    
-    # Abfrage, um die Jugendherbergen und ihre Adressen zu erhalten
-    cursor.execute('''
-        SELECT Name, Adresse, JugendherbergeID
-        FROM Jugendherberge
-    ''')
-    
-    jugendherbergen = cursor.fetchall()
+
+    cursor.execute('SELECT Name FROM Jugendherberge')
+    result = cursor.fetchall()
+
     connection.close()
-    
-    # Liste von Dictionaries zurückgeben, mit Name, Adresse und ID der Jugendherberge
-    jugendherbergen_list = []
-    for jugendherberge in jugendherbergen:
-        jugendherbergen_list.append({
-            'JugendherbergeID': jugendherberge[2],
-            'DisplayName': f"{jugendherberge[0]} - {jugendherberge[1]}"  # Name und Adresse im Dropdown anzeigen
-        })
-    
-    return jugendherbergen_list
+    return [row[0] for row in result]
 
 
 @anvil.server.callable
