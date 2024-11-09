@@ -1,3 +1,12 @@
+from ._anvil_designer import Form1Template
+from anvil import *
+import anvil.server
+import anvil.tables as tables
+import anvil.tables.query as q
+from anvil.tables import app_tables
+
+# in das datagrid neben namen preiskategorie des gastes
+
 class Form1(Form1Template):
     def __init__(self, **properties):
         self.init_components(**properties)
@@ -30,6 +39,11 @@ class Form1(Form1Template):
         
         # Setze den Standardwert auf 'Alle'
         self.drop_down_preiskategorie.selected_value = None  
+
+    def on_jugendherberge_change(self, **event_args):
+        selected_herberge = self.drop_down_jugendherbergen.selected_value
+        if selected_herberge:
+            self.update_zimmer_dropdown(selected_herberge, self.drop_down_preiskategorie.selected_value)
 
     def populate_gaeste_dropdown(self):
       # Rufe alle Gäste mit Preisen ab
@@ -111,50 +125,3 @@ class Form1(Form1Template):
         else:
             self.drop_down_zimmer.items = [('Kein Zimmer', None)]  # Setze auf 'Kein Zimmer', wenn keine Zimmer verfügbar sind
             self.drop_down_zimmer.selected_value = None  # Keine Auswahl
-
-    def book_click(self, **event_args):
-      # Hole die ausgewählten Werte
-      selected_herberge = self.drop_down_jugendherbergen.selected_value
-      selected_preiskategorie = self.drop_down_preiskategorie.selected_value
-      selected_zimmer = self.drop_down_zimmer.selected_value
-      selected_gaeste = self.gaeste  # Alle Gäste, die mitgebucht werden
-
-      # Validierungen
-      if not selected_zimmer:
-          alert("Kein Zimmer verfügbar. Bitte wählen Sie ein anderes Zimmer.")
-          return
-      
-      if not selected_herberge:
-          alert("Bitte wählen Sie eine Jugendherberge aus.")
-          return
-      
-      if selected_preiskategorie is None:
-          alert("Bitte wählen Sie eine Preiskategorie aus.")
-          return
-
-      # Buchung des ersten Gastes als Hauptgast
-      hauptgast_id = self.drop_down_gaeste.selected_value
-      hauptgast = next(guest for guest in self.drop_down_gaeste.items if guest[1] == hauptgast_id)
-
-      # Speichern der Buchung
-      buchung_id = anvil.server.call('create_buchung', hauptgast_id, selected_zimmer)
-
-      # Mitbuchungen speichern
-      for gast in selected_gaeste:
-          mitbuchung_id = anvil.server.call('create_mitbuchung', buchung_id, gast['GastID'])
-
-      # Ausgabe der gesamten Tabelle
-      self.print_all_data()
-
-    def print_all_data(self):
-      # Alle Buchungen und Gäste ausgeben
-      buchungen = anvil.server.call('get_all_buchungen')
-      for buchung in buchungen:
-          print(f"BuchungID: {buchung[0]}, GastID: {buchung[2]}, ZimmerID: {buchung[3]}")
-      
-      gaeste = anvil.server.call('get_all_guests')
-      for gast in gaeste:
-          print(f"GastID: {gast[0]}, Name: {gast[1]} {gast[2]}")
-
-
-

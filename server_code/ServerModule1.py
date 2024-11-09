@@ -212,23 +212,3 @@ def get_all_guests_with_prices():
     guests = cursor.fetchall()
     connection.close()
     return guests
-
-@anvil.server.callable
-def create_buchung(gast_id, zimmer_id):
-    connection = sqlite3.connect('jugendherberge.db')
-    cursor = connection.cursor()
-
-    cursor.execute('''
-        INSERT INTO Buchung (Buchungsdatum, GastID, ZimmerID) 
-        VALUES (CURRENT_DATE, ?, ?)
-    ''', (gast_id, zimmer_id))
-    
-    buchung_id = cursor.lastrowid
-    connection.commit()
-    connection.close()
-
-    return buchung_id
-
-@anvil.server.callable
-def create_mitbuchung(buchung_id, gast_id):
-    connection = sqlite3.connect('jugend
