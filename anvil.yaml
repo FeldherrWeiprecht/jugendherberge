@@ -19,8 +19,9 @@ db_schema:
     columns: []
     server: full
     title: Table 2
-name: Classic 1
-package_name: Classic_1
+metadata: {title: jugendherberge}
+name: jugendherberge
+package_name: jugendherberge
 runtime_options:
   client_version: '3'
   server_spec: {base: python310-minimal}
