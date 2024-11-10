@@ -7,6 +7,8 @@ import anvil.server
 import sqlite3
 from datetime import datetime
 
+### !Datenbank in Anvil erstellt und befuellt weil beim Hochladen immer ein Error kommt ich habe alles probiert. ###
+
 @anvil.server.callable
 def create_database():
     connection = sqlite3.connect('jugendherberge.db')
@@ -143,12 +145,10 @@ def get_jugendherbergen():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
     
-    # Auswahl von Name und Adresse
     cursor.execute('SELECT Name, Adresse FROM Jugendherberge')
     result = cursor.fetchall()
     
     connection.close()
-    # Rückgabe in gewünschtem Format: "Name (Adresse)"
     return [(f"{name} ({adresse})", name) for name, adresse in result]
 
 @anvil.server.callable
@@ -164,8 +164,6 @@ def get_zimmer_by_jugendherberge(jugendherberge_id):
     
     zimmer = cursor.fetchall()
     connection.close()
-    
-    # Rückgabe mit korrekter Pluralform für "Schlafplatz"
     return [
         (
             f"Zimmer {zimmernummer} - {preis} € ({schlafplaetze} Schlafplatz{'e' if schlafplaetze > 1 else ''})",
@@ -187,8 +185,7 @@ def get_jugendherberge_id_by_name(jugendherberge_name):
 def get_preiskategorien():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
-    
-    # Abrufen von Beschreibung, ID und Preis
+
     cursor.execute('SELECT Beschreibung, PreiskategorieID, Preis FROM Preiskategorie')
     preiskategorien = cursor.fetchall()
     
@@ -208,8 +205,6 @@ def get_zimmer_by_jugendherberge_and_preiskategorie(jugendherberge_id, preiskate
     
     zimmer = cursor.fetchall()
     connection.close()
-    
-    # Rückgabe mit korrekter Pluralform für "Schlafplatz"
     return [
         (
             f"Zimmer {zimmernummer} - {preis} € ({schlafplaetze} Schlafplatz{'e' if schlafplaetze > 1 else ''})",
@@ -245,7 +240,6 @@ def print_database_tables():
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
 
-    # Abrufen der Daten aus allen relevanten Tabellen
     tables = ['Preiskategorie', 'Gast', 'Zimmer', 'Buchung', 'MitBuchung', 'Jugendherberge']
     table_data = {}
 
@@ -262,18 +256,13 @@ def create_buchung(guest_ids, room_id):
     connection = sqlite3.connect('jugendherberge.db')
     cursor = connection.cursor()
 
-    # Aktuellen Zeitpunkt für die Buchung
-    buchungsdatum = "2024-11-09"  # Zum Beispiel das heutige Datum, kann mit datetime modifiziert werden
-
-    # Buchung für den ersten Gast (Max Mustermann, GastID = 1)
+    buchungsdatum = "2024-11-09" 
     cursor.execute('''
         INSERT INTO Buchung (Buchungsdatum, GastID, ZimmerID)
         VALUES (?, ?, ?)
     ''', (buchungsdatum, 1, room_id))
 
-    buchung_id = cursor.lastrowid  # Die ID der gerade eingefügten Buchung
-
-    # MitBuchung für alle anderen Gäste
+    buchung_id = cursor.lastrowid 
     for guest_id in guest_ids:
         cursor.execute('''
             INSERT INTO MitBuchung (BuchungID, GastID)
